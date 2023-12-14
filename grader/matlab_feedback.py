@@ -17,13 +17,11 @@ class Feedback:
         tests = getmembers(test, isfunction)
         tests = [t for t in tests if t[0] != 'points' and t[0] != 'name']
         self.tests = tests
-        # print('[grader] initialized tests: ')
-        # print(self.tests)
 
     def run_tests(self):
 
         for test_name, f in self.tests:
-            print(f'[grader] running test test_name')
+            print(f'[grader] running test {test_name}')
             try:
                 score, feedback = f()
             except Exception as e:

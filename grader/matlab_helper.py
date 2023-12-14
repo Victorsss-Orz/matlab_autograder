@@ -12,9 +12,9 @@ def check_scalar(name, st, ref, atol = 1e-8, rtol = 1e-5):
     if st is None:
         return 0, f'{name} is None or not defined'
     
-    if not isinstance(ref, (complex, float, int, np.number)):
+    if not isinstance(st, (complex, float, int, np.number)):
         try:
-            if not ref.is_number:
+            if not st.is_number:
                 return 0, f'{name} is not a number'
         except AttributeError:
             return 0, f'{name} is not a number'
@@ -37,16 +37,16 @@ def check_numpy_array_features(name, st, ref):
         return 0, f'{st} is a numpy matrix. Do not use those. \nbit.ly/array-vs-matrix'
         
     if ref.shape != st.shape:
-        return 0, f'{name} does not have correct shape--\ngot: {st.shape}, expected: {ref.shape}'
+        return 0, f'{name} does not have correct shape--got: {st.shape}, expected: {ref.shape}'
     
     if ref.dtype.kind != st.dtype.kind:
-        return 0, f'{name} does not have correct data type--\ngot: {st.dtype.kind}, expected: {ref.dtype.kind}'
+        return 0, f'{name} does not have correct data type--got: {st.dtype}, expected: {ref.dtype}'
     
     return 1, None
 
 def check_numpy_array_allclose(name, st, ref, atol = 1e-8, rtol = 1e-5):
     
-    feature_res, feature_feedback = check_numpy_array_features(st, ref)
+    feature_res, feature_feedback = check_numpy_array_features(name, st, ref)
     if not feature_res:
         return 0, feature_feedback
     
@@ -73,7 +73,7 @@ def get_user_var(variable_name):
     if error:
         raise Exception(error.decode("utf-8"))
     if output:
-        print(output)
+        print(output.decode("utf-8"))
     
     variable = scipy.io.loadmat('/grade/run/check_variable.mat', simplify_cells = True)[variable_name]
     return variable
@@ -110,7 +110,7 @@ def call_user_function(function_name, *inputs):
     if error:
         raise Exception(error.decode("utf-8"))
     if output:
-        print(output)
+        print(output.decode("utf-8"))
     
     variable = scipy.io.loadmat('/grade/run/check_variable.mat', simplify_cells = True)['function_output']
     return variable
@@ -126,14 +126,14 @@ def get_ref_var(variable_name):
     write_code('/grade/run/ref_cp.m', ref_code)
 
     # run script
-    process = subprocess.Popen(['octave', '--silent', '/grade/run/ref_code_cp.m'], 
+    process = subprocess.Popen(['octave', '--silent', '/grade/run/ref_cp.m'], 
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
 
     if error:
         raise Exception(error.decode("utf-8"))
     if output:
-        print(output)
+        print(output.decode("utf-8"))
     
     variable = scipy.io.loadmat('/grade/run/ref_variable.mat', simplify_cells = True)[variable_name]
     return variable
@@ -170,7 +170,7 @@ def call_ref_function(function_name, *inputs):
     if error:
         raise Exception(error.decode("utf-8"))
     if output:
-        print(output)
+        print(output.decode("utf-8"))
     
     variable = scipy.io.loadmat('/grade/run/ref_variable.mat', simplify_cells = True)['function_output']
     return variable
@@ -246,7 +246,7 @@ def prepare_code():
     write_code('/grade/run/user_code.m', user_code)
 
     ref_code = read_code('/grade/run/ref.m')
-    ref_code = var_read_command + fnc_read_command + user_code
+    ref_code = var_read_command + fnc_read_command + ref_code
     write_code('/grade/run/ref.m', ref_code)
 
 def points(points):
