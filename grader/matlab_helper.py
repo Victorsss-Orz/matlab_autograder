@@ -3,7 +3,12 @@ import scipy.io
 import numpy as np
 import os
 
+# --------------------------------------------------------
+# helper functions for tests
+# --------------------------------------------------------
+
 def check_scalar(name, st, ref, atol = 1e-8, rtol = 1e-5):
+
     if st is None:
         return 0, f'{name} is None or not defined'
     
@@ -20,11 +25,35 @@ def check_scalar(name, st, ref, atol = 1e-8, rtol = 1e-5):
         return 1, f'{name} looks good'
     return 0, f'{name} is inaccurate'
 
-def check_numpy_array_allclose(name, st, ref, atol = 1e-8, rtol = 1e-5):
+def check_numpy_array_features(name, st, ref):
+
     if st is None:
         return 0, f'{name} is None or not defined'
     
+    if not isinstance(st, np.ndarray):
+        return 0, f'{name} is not a numpy array'
+
+    if isinstance(st, np.matrix):
+        return 0, f'{st} is a numpy matrix. Do not use those. \nbit.ly/array-vs-matrix'
+        
+    if ref.shape != st.shape:
+        return 0, f'{name} does not have correct shape--\ngot: {st.shape}, expected: {ref.shape}'
     
+    if ref.dtype.kind != st.dtype.kind:
+        return 0, f'{name} does not have correct data type--\ngot: {st.dtype.kind}, expected: {ref.dtype.kind}'
+    
+    return 1, None
+
+def check_numpy_array_allclose(name, st, ref, atol = 1e-8, rtol = 1e-5):
+    
+    feature_res, feature_feedback = check_numpy_array_features(st, ref)
+    if not feature_res:
+        return 0, feature_feedback
+    
+    if np.allclose(ref, st, rtol=rtol, atol=atol):
+        return 1, f'{name} looks good'
+    else:
+        return 0, f'{name} is inaccurate'
 
 def get_user_var(variable_name):
     
