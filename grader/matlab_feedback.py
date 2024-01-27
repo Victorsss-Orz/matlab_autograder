@@ -1,5 +1,4 @@
 import json
-from inspect import getmembers, isfunction
 from test import Test
 
 class Feedback:

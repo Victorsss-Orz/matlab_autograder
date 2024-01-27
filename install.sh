@@ -2,7 +2,7 @@
 
 apt update
 apt install -y python3
-apt update
+# apt update
 if apt install -y octave; then
     echo "Octave installed successfully"
 else
