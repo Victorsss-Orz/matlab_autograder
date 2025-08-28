@@ -10,4 +10,4 @@ else
 fi
 apt install -y python3-pip
 
-pip3 install --no-cache-dir scipy
+pip3 install --no-cache-dir scipy IPython pandas nbformat
